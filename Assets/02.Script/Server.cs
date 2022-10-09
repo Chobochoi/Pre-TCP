@@ -6,17 +6,23 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.IO;
+using TMPro;
 
 public class Server : MonoBehaviour
 {
-    public InputField PortInput;
+    public TMP_InputField PortInput;
 
     List<ServerClient> clients;
     List<ServerClient> disconnectList;
+    [SerializeField] Canvas noticeCanvas;
 
     TcpListener server;
     bool serverStarted;
 
+    private void Awake()
+    {
+        noticeCanvas = GetComponent<Canvas>();
+    }
 
     public void ServerCreate()
     {
@@ -31,13 +37,13 @@ public class Server : MonoBehaviour
 
             StartListening();
             serverStarted = true;
-            //Chat.instance.ShowMessage($"서버가 {port}에서 시작되었습니다.");
-            Debug.Log($"서버가 {port}에서 시작되었습니다.");
+            Chat.instance.ShowMessage($"서버가 {port}에서 시작되었습니다.");
+            //Debug.Log($"서버가 {port}에서 시작되었습니다.");
         }
         catch (Exception e)
         {
-            //Chat.instance.ShowMessage($"Socket error: {e.Message}");
-            Debug.Log($"Socket error: {e.Message}");
+            Chat.instance.ShowMessage($"Socket error: {e.Message}");
+            //Debug.Log($"Socket error: {e.Message}");
         }
     }
 
@@ -100,6 +106,7 @@ public class Server : MonoBehaviour
 
     void StartListening()
     {
+        // 비동기로 연결
         server.BeginAcceptTcpClient(AcceptTcpClient, server);
     }
 
@@ -107,6 +114,7 @@ public class Server : MonoBehaviour
     {
         TcpListener listener = (TcpListener)ar.AsyncState;
         clients.Add(new ServerClient(listener.EndAcceptTcpClient(ar)));
+        // 다시 바로 자기자신을 호출하기
         StartListening();
 
         // 메시지를 연결된 모두에게 보냄
@@ -134,6 +142,7 @@ public class Server : MonoBehaviour
             {
                 StreamWriter writer = new StreamWriter(c.tcp.GetStream());
                 writer.WriteLine(data);
+                // Flush : 정보 내보내기 
                 writer.Flush();
             }
             catch (Exception e)
@@ -142,8 +151,20 @@ public class Server : MonoBehaviour
             }
         }
     }
-}
 
+    // 버튼이 클릭되면 시작
+    // 안내 UI 띄우기
+
+    public void UIstrBtn()
+    {
+        noticeCanvas.gameObject.SetActive(true);
+    }
+
+    public void StartButton()
+    {
+
+    }
+}
 
 public class ServerClient
 {

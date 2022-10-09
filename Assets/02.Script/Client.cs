@@ -5,10 +5,11 @@ using UnityEngine.UI;
 using System.Net.Sockets;
 using System.IO;
 using System;
+using TMPro;
 
 public class Client : MonoBehaviour
 {
-	public InputField IPInput, PortInput, NickInput;
+	public TMP_InputField IPInput, PortInput, NickInput;
 	string clientName;
 
 	bool socketReady;
@@ -16,9 +17,9 @@ public class Client : MonoBehaviour
 	NetworkStream stream;
 	StreamWriter writer;
 	StreamReader reader;
+    
 
-
-	public void ConnectToServer()
+    public void ConnectToServer()
 	{
 		// 이미 연결되었다면 함수 무시
 		if (socketReady) return;
@@ -84,7 +85,6 @@ public class Client : MonoBehaviour
 		SendInput.text = "";
 		Send(message);
 	}
-
 
 	void OnApplicationQuit()
 	{
